@@ -1,4 +1,3 @@
-const { expect } = require('@wdio/globals')
 const formsPage = require('../pageobjects/forms.page')
 
 describe('My forms application', () => {

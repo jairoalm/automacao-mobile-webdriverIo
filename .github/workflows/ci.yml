@@ -1,9 +1,6 @@
 name: WebdriverIO Tests with Allure Report
 
-on:
-  push:
-    branches:
-      - main  # ou master, conforme seu repo
+on: push
 
 jobs:
   wdio-run:
