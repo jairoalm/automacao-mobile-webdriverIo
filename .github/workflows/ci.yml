@@ -2,6 +2,11 @@ name: WebdriverIO Tests with Allure Report
 
 on: push
 
+env:
+  CLOUD: true # Define se os testes serão executados no BrowserStack
+  BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+  BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+
 jobs:
   wdio-run:
     runs-on: ubuntu-22.04
@@ -17,8 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run WebdriverIO tests
-        run: npx wdio run wdio.conf.js
+      - name: Run WDIO Tests on BrowserStack
+        run: CLOUD=true npx wdio run wdio.conf.js
 
       - name: Generate Allure Report
         uses: simple-elf/allure-report-action@v1.12

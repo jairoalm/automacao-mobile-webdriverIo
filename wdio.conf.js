@@ -1,3 +1,5 @@
+const isCloud = process.env.CLOUD === 'true'; // define se está em execução no BrowserStack
+
 exports.config = {
     //
     // ====================
@@ -21,7 +23,19 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://saucelabs.com/platform/platform-configurator
     //
-    capabilities: [{
+    capabilities: isCloud? [
+        {
+            platformName: 'android',
+            'appium:deviceName': 'Google Pixel 7',
+            'appium:platformVersion': '13.0',
+            'appium:app': 'bs://9d545bc57643e794c93ada5a113bfe51b2b172ac', // substitua pelo ID real do app enviado ao BrowserStack
+            'appium:automationName': 'UiAutomator2',
+            'appium:project': 'WDIO Mobile',
+            'appium:build': 'GitHub Actions Run',
+            'appium:name': 'Android Test'
+        }
+    ] : [        
+        {
         // capabilities for local Appium web tests on an Android Emulator
         platformName: 'Android',        
         'appium:deviceName': 'Android GoogleAPI Emulator',
@@ -30,6 +44,10 @@ exports.config = {
         'appium:platformVersion': '15.0',
         'appium:automationName': 'UiAutomator2'
     }],
+    services: isCloud ? ['browserstack'] : ['appium'],
+
+    user: isCloud ? process.env.BROWSERSTACK_USERNAME : undefined,
+    key: isCloud ? process.env.BROWSERSTACK_ACCESS_KEY : undefined,
 
     //
     // ===================
