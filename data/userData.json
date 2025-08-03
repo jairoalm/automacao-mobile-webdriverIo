@@ -1,0 +1,52 @@
+{
+  "validUser": {
+    "email": "teste@valido.com",
+    "password": "12345678",
+    "confirmPassword": "12345678"
+  },
+  "invalidEmail": {
+    "email": "invalido",
+    "password": "12345678",
+    "confirmPassword": "12345678"
+  },
+  "invalidPassword": {
+    "email": "teste@email.com",
+    "password": "123",
+    "confirmPassword": "123"
+  },
+  "invalidConfirmPassword": {
+    "email": "teste@email.com",
+    "password": "12345678",
+    "confirmPassword": "diferente123"
+  },
+  "emptyFields": {
+    "email": "",
+    "password": "",
+    "confirmPassword": ""
+  },
+  "onlyEmail": {
+    "email": "",
+    "password": "12345678",
+    "confirmPassword": "12345678"
+  },
+  "onlyPassword": {
+    "email": "test@example.com",
+    "password": "",
+    "confirmPassword": "12345678"
+  },
+  "onlyConfirmPassword": {
+    "email": "test@example.com",
+    "password": "12345678",
+    "confirmPassword": ""
+  },
+  "onlyEmailConfirmPassword": {
+    "email": "",
+    "password": "12345678",
+    "confirmPassword": ""
+  },
+  "onlyEmailPassword": {
+    "email": "",
+    "password": "",
+    "confirmPassword": "12345678"
+  }
+}

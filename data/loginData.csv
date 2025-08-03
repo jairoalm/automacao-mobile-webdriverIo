@@ -1,0 +1,8 @@
+cenário,email,password
+login_valido,teste@teste.com,12345678
+inválido_email,invalidemail.com,ValidPass123
+senha_fraca,validuser@example.com,short
+email_vazio,,ValidPass123
+senha_vazia,validuser@example.com,
+login_invalido,invaliduser@example.com,wrongpass
+email_senha_vazios,,
