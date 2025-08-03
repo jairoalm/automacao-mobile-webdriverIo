@@ -61,7 +61,7 @@ exports.config = {
         'appium:platformVersion': isCloud ? '12.0' : '11.0',
         'appium:automationName': 'UiAutomator2',
         'appium:app': isCloud
-            ? 'bs://<SEU_APP_ID_BROWSERSTACK>'
+            ? 'bs://9d545bc57643e794c93ada5a113bfe51b2b172ac'
             : join(process.cwd(), './apps/android.wdio.native.app.v1.0.8.apk'),
         'appium:project': 'App Android',
         'appium:build': 'GitHub Actions Build',
