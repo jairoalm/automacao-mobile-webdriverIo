@@ -1,3 +1,4 @@
+const { join } = require('path');
 const isCloud = process.env.CLOUD === 'true'; // define se está em execução no BrowserStack
 
 exports.config = {
@@ -8,7 +9,7 @@ exports.config = {
     // WebdriverIO supports running e2e tests as well as unit and component tests.
     runner: 'local',
     port: 4723,
-   
+
     specs: [
         './tests/*.js',
     ],
@@ -16,7 +17,7 @@ exports.config = {
     exclude: [
         // 'path/to/excluded/files'
     ],
-  
+
     maxInstances: 1,
     //
     // If you have trouble getting all important capabilities together, check out the
@@ -24,35 +25,47 @@ exports.config = {
     // https://saucelabs.com/platform/platform-configurator
     //
 
-    user: isCloud ? process.env.BROWSERSTACK_USERNAME : undefined,
-    key: isCloud ? process.env.BROWSERSTACK_ACCESS_KEY : undefined,
+    // user: isCloud ? process.env.BROWSERSTACK_USERNAME : undefined,
+    // key: isCloud ? process.env.BROWSERSTACK_ACCESS_KEY : undefined,
 
-    services: isCloud ? [] : ['appium'], // NÃO use o serviço Appium no BrowserStack
-    hostname: isCloud ? 'hub.browserstack.com' : '127.0.0.1',
-    port: isCloud ? 443 : 4723,
-    protocol: isCloud ? 'https' : 'http',
-    path: isCloud ? '/wd/hub' : '/',
+    // services: isCloud ? [] : ['appium'], // NÃO use o serviço Appium no BrowserStack
+    // hostname: isCloud ? 'hub.browserstack.com' : '127.0.0.1',
+    // port: isCloud ? 443 : 4723,
+    // protocol: isCloud ? 'https' : 'http',
+    // path: isCloud ? '/wd/hub' : '/',
 
-    capabilities: isCloud? [
-        {
-            platformName: 'android',
-            'appium:deviceName': 'Samsung Galaxy S22',
-            'appium:platformVersion': '12.0',
-            'appium:app': 'bs://9d545bc57643e794c93ada5a113bfe51b2b172ac', // substitua pelo ID real do app enviado ao BrowserStack
-            'appium:automationName': 'UiAutomator2',
-            'appium:project': 'WDIO Mobile',
-            'appium:build': 'GitHub Actions Run',
-            'appium:name': 'Android Test'
-        }
-    ] : [        
-        {
-        // capabilities for local Appium web tests on an Android Emulator
-        platformName: 'Android',        
-        'appium:deviceName': 'Android GoogleAPI Emulator',
-        'appium:appPackage': 'com.wdiodemoapp',
-        'appium:appActivity': '.MainActivity',
-        'appium:platformVersion': '15.0',
-        'appium:automationName': 'UiAutomator2'
+    // capabilities: isCloud? [
+    //     {
+    //         platformName: 'android',
+    //         'appium:deviceName': 'Samsung Galaxy S22',
+    //         'appium:platformVersion': '12.0',
+    //         'appium:app': 'bs://9d545bc57643e794c93ada5a113bfe51b2b172ac', // substitua pelo ID real do app enviado ao BrowserStack
+    //         'appium:automationName': 'UiAutomator2',
+    //         'appium:project': 'WDIO Mobile',
+    //         'appium:build': 'GitHub Actions Run',
+    //         'appium:name': 'Android Test'
+    //     }
+    // ] : [        
+    //     {
+    //     // capabilities for local Appium web tests on an Android Emulator
+    //     platformName: 'Android',        
+    //     'appium:deviceName': 'Android GoogleAPI Emulator',
+    //     'appium:appPackage': 'com.wdiodemoapp',
+    //     'appium:appActivity': '.MainActivity',
+    //     'appium:platformVersion': '15.0',
+    //     'appium:automationName': 'UiAutomator2'
+    // }],
+    capabilities: [{
+        platformName: 'Android',
+        'appium:deviceName': isCloud ? 'Samsung Galaxy S22' : 'emulator-5554',
+        'appium:platformVersion': isCloud ? '12.0' : '11.0',
+        'appium:automationName': 'UiAutomator2',
+        'appium:app': isCloud
+            ? 'bs://<SEU_APP_ID_BROWSERSTACK>'
+            : join(process.cwd(), './apps/android.wdio.native.app.v1.0.8.apk'),
+        'appium:project': 'App Android',
+        'appium:build': 'GitHub Actions Build',
+        'appium:name': 'Teste Android',
     }],
 
     //
@@ -63,7 +76,7 @@ exports.config = {
     //
     // Level of logging verbosity: trace | debug | info | warn | error | silent
     logLevel: 'info',
-    
+
     bail: 0,
     //
     // Set a base URL in order to shorten url command calls. If your `url` parameter starts
@@ -86,7 +99,18 @@ exports.config = {
     // Services take over a specific job you don't want to take care of. They enhance
     // your test setup with almost no effort. Unlike plugins, they don't add new
     // commands. Instead, they hook themselves up into the test process.
-    services: ['appium', 'visual'],
+    // services: ['appium', 'visual'],
+
+    services: isCloud ? [] : ['appium', 'visual'],
+
+    // Configurações para conexão com BrowserStack ou local
+    user: isCloud ? process.env.BROWSERSTACK_USERNAME : undefined,
+    key: isCloud ? process.env.BROWSERSTACK_ACCESS_KEY : undefined,
+    hostname: isCloud ? 'hub.browserstack.com' : 'localhost',
+    port: isCloud ? 443 : 4723,
+    path: isCloud ? '/wd/hub' : '/',
+    protocol: isCloud ? 'https' : 'http',
+
 
     // Framework you want to run your specs with.
     // The following are supported: Mocha, Jasmine, and Cucumber
@@ -95,19 +119,7 @@ exports.config = {
     // Make sure you have the wdio adapter package for the specific framework installed
     // before running any tests.
     framework: 'mocha',
-    
-    //
-    // The number of times to retry the entire specfile when it fails as a whole
-    // specFileRetries: 1,
-    //
-    // Delay in seconds between the spec file retry attempts
-    // specFileRetriesDelay: 0,
-    //
-    // Whether or not retried spec files should be retried immediately or deferred to the end of the queue
-    // specFileRetriesDeferred: false,
-    //
-    // Test reporter for stdout.
-    // The only one supported by default is 'dot'
+
     // see also: https://webdriver.io/docs/dot-reporter
     reporters: ['spec', ['allure', {
         outputDir: './allure-results',
@@ -115,36 +127,36 @@ exports.config = {
         disableWebdriverScreenshotsReporting: false,
         useCucumberStepReporter: false
     }, 'visual', {
-        outputDir: './visual-regression',
-        baselineFolder: './visual-regression/baseline',
-        formatImageName: '{tag}-{width}x{height}-{browserName}-{platformName}',
-        screenshotPath: './visual-regression/screenshots',
-        savePerInstance: true,
-        autoSaveBaseline: true,
-        // If you want to use the visual service with a different framework than Mocha, you
-        // need to set the `screenshotOnRunFailure` option to true.
-        screenshotOnRunFailure: true,
-        // If you want to use the visual service with a different framework than Mocha, you
-        // need to set the `screenshotOnSpecFailure` option to true.
-        screenshotOnSpecFailure: true,
-        // If you want to use the visual service with a different framework than Mocha, you
-        // need to set the `screenshotOnTestFailure` option to true.
-        screenshotOnTestFailure: true,
-        // If you want to use the visual service with a different framework than Mocha, you
-        // need to set the `screenshotOnHookFailure` option to true.
-        screenshotOnHookFailure: true,
-        // If you want to use the visual service with a different framework than Mocha, you
-        // need to set the `screenshotOnCommandFailure` option to true.
-        screenshotOnCommandFailure: true,
-        // If you want to use the visual service with a different framework than Mocha, you
-        // need to set the `screenshotOnAssertionFailure` option to true.
-        screenshotOnAssertionFailure: true,
-        // If you want to use the visual service with a different framework than Mocha, you
-        // need to set the `screenshotOnTestEnd` option to true.
-        screenshotOnTestEnd: true,
-        // If you want to use the visual service with a different framework than Mocha, you
-        // need to set the `screenshotOnHookEnd` option to true.    
-    }]],
+            outputDir: './visual-regression',
+            baselineFolder: './visual-regression/baseline',
+            formatImageName: '{tag}-{width}x{height}-{browserName}-{platformName}',
+            screenshotPath: './visual-regression/screenshots',
+            savePerInstance: true,
+            autoSaveBaseline: true,
+            // If you want to use the visual service with a different framework than Mocha, you
+            // need to set the `screenshotOnRunFailure` option to true.
+            screenshotOnRunFailure: true,
+            // If you want to use the visual service with a different framework than Mocha, you
+            // need to set the `screenshotOnSpecFailure` option to true.
+            screenshotOnSpecFailure: true,
+            // If you want to use the visual service with a different framework than Mocha, you
+            // need to set the `screenshotOnTestFailure` option to true.
+            screenshotOnTestFailure: true,
+            // If you want to use the visual service with a different framework than Mocha, you
+            // need to set the `screenshotOnHookFailure` option to true.
+            screenshotOnHookFailure: true,
+            // If you want to use the visual service with a different framework than Mocha, you
+            // need to set the `screenshotOnCommandFailure` option to true.
+            screenshotOnCommandFailure: true,
+            // If you want to use the visual service with a different framework than Mocha, you
+            // need to set the `screenshotOnAssertionFailure` option to true.
+            screenshotOnAssertionFailure: true,
+            // If you want to use the visual service with a different framework than Mocha, you
+            // need to set the `screenshotOnTestEnd` option to true.
+            screenshotOnTestEnd: true,
+            // If you want to use the visual service with a different framework than Mocha, you
+            // need to set the `screenshotOnHookEnd` option to true.    
+        }]],
 
     // Options to be passed to Mocha.
     // See the full list at http://mochajs.org/
