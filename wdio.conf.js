@@ -23,11 +23,12 @@ exports.config = {
     // Sauce Labs platform configurator - a great tool to configure your capabilities:
     // https://saucelabs.com/platform/platform-configurator
     //
+
     capabilities: isCloud? [
         {
             platformName: 'android',
-            'appium:deviceName': 'Google Pixel 7',
-            'appium:platformVersion': '13.0',
+            'appium:deviceName': 'Samsung Galaxy S22',
+            'appium:platformVersion': '12.0',
             'appium:app': 'bs://9d545bc57643e794c93ada5a113bfe51b2b172ac', // substitua pelo ID real do app enviado ao BrowserStack
             'appium:automationName': 'UiAutomator2',
             'appium:project': 'WDIO Mobile',
@@ -44,6 +45,7 @@ exports.config = {
         'appium:platformVersion': '15.0',
         'appium:automationName': 'UiAutomator2'
     }],
+
     services: isCloud ? ['browserstack'] : ['appium'],
 
     user: isCloud ? process.env.BROWSERSTACK_USERNAME : undefined,
