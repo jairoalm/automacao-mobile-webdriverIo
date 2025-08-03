@@ -24,6 +24,15 @@ exports.config = {
     // https://saucelabs.com/platform/platform-configurator
     //
 
+    user: isCloud ? process.env.BROWSERSTACK_USERNAME : undefined,
+    key: isCloud ? process.env.BROWSERSTACK_ACCESS_KEY : undefined,
+
+    services: isCloud ? [] : ['appium'], // NÃO use o serviço Appium no BrowserStack
+    hostname: isCloud ? 'hub.browserstack.com' : '127.0.0.1',
+    port: isCloud ? 443 : 4723,
+    protocol: isCloud ? 'https' : 'http',
+    path: isCloud ? '/wd/hub' : '/',
+
     capabilities: isCloud? [
         {
             platformName: 'android',
@@ -45,11 +54,6 @@ exports.config = {
         'appium:platformVersion': '15.0',
         'appium:automationName': 'UiAutomator2'
     }],
-
-    services: isCloud ? ['browserstack'] : ['appium'],
-
-    user: isCloud ? process.env.BROWSERSTACK_USERNAME : undefined,
-    key: isCloud ? process.env.BROWSERSTACK_ACCESS_KEY : undefined,
 
     //
     // ===================
