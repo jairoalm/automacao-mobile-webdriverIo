@@ -1,4 +1,3 @@
-const { expect } = require('@wdio/globals');
 // Importando a página HomePage
 const HomePage = require('../pageobjects/home.page');
 

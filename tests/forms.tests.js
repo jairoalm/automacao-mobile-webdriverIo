@@ -1,6 +1,6 @@
 const formsPage = require('../pageobjects/forms.page')
 
-describe('My forms application', () => {
+describe('Teste do meu formulário', () => {
     it('Preencher formulário sem erros', async () => {
         await formsPage.clickForms()
         await formsPage.component()

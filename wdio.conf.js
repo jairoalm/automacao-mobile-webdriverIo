@@ -1,5 +1,10 @@
+// Para do browserstack
 const { join } = require('path');
 const isCloud = process.env.CLOUD === 'true'; // define se está em execução no BrowserStack
+
+const fs = require('fs');
+const path = require('path');
+const allure = require('@wdio/allure-reporter').default;
 
 exports.config = {
     //
@@ -19,50 +24,15 @@ exports.config = {
     ],
 
     maxInstances: 1,
-    //
-    // If you have trouble getting all important capabilities together, check out the
-    // Sauce Labs platform configurator - a great tool to configure your capabilities:
-    // https://saucelabs.com/platform/platform-configurator
-    //
 
-    // user: isCloud ? process.env.BROWSERSTACK_USERNAME : undefined,
-    // key: isCloud ? process.env.BROWSERSTACK_ACCESS_KEY : undefined,
-
-    // services: isCloud ? [] : ['appium'], // NÃO use o serviço Appium no BrowserStack
-    // hostname: isCloud ? 'hub.browserstack.com' : '127.0.0.1',
-    // port: isCloud ? 443 : 4723,
-    // protocol: isCloud ? 'https' : 'http',
-    // path: isCloud ? '/wd/hub' : '/',
-
-    // capabilities: isCloud? [
-    //     {
-    //         platformName: 'android',
-    //         'appium:deviceName': 'Samsung Galaxy S22',
-    //         'appium:platformVersion': '12.0',
-    //         'appium:app': 'bs://9d545bc57643e794c93ada5a113bfe51b2b172ac', // substitua pelo ID real do app enviado ao BrowserStack
-    //         'appium:automationName': 'UiAutomator2',
-    //         'appium:project': 'WDIO Mobile',
-    //         'appium:build': 'GitHub Actions Run',
-    //         'appium:name': 'Android Test'
-    //     }
-    // ] : [        
-    //     {
-    //     // capabilities for local Appium web tests on an Android Emulator
-    //     platformName: 'Android',        
-    //     'appium:deviceName': 'Android GoogleAPI Emulator',
-    //     'appium:appPackage': 'com.wdiodemoapp',
-    //     'appium:appActivity': '.MainActivity',
-    //     'appium:platformVersion': '15.0',
-    //     'appium:automationName': 'UiAutomator2'
-    // }],
     capabilities: [{
         platformName: 'Android',
         'appium:deviceName': isCloud ? 'Samsung Galaxy S22' : 'emulator-5554',
-        'appium:platformVersion': isCloud ? '12.0' : '11.0',
+        'appium:platformVersion': isCloud ? '12.0' : '15.0',
         'appium:automationName': 'UiAutomator2',
         'appium:app': isCloud
             ? 'bs://9d545bc57643e794c93ada5a113bfe51b2b172ac'
-            : join(process.cwd(), './apps/android.wdio.native.app.v1.0.8.apk'),
+            : join(process.cwd(), './app/android.wdio.native.app.v1.0.8.apk'),
         'appium:project': 'App Android',
         'appium:build': 'GitHub Actions Build',
         'appium:name': 'Teste Android',
@@ -123,7 +93,7 @@ exports.config = {
     // see also: https://webdriver.io/docs/dot-reporter
     reporters: ['spec', ['allure', {
         outputDir: './allure-results',
-        disableWebdriverStepsReporting: true,
+        disableWebdriverStepsReporting: false,
         disableWebdriverScreenshotsReporting: false,
         useCucumberStepReporter: false
     }, 'visual', {
@@ -324,4 +294,45 @@ exports.config = {
     */
     // afterAssertion: function(params) {
     // }
+
+    onPrepare: function () {
+        const content = `
+Ambiente=Mobile QA
+Plataforma=${process.env.PLATAFORMA || 'Android/iOS'}
+Dispositivo=Emulador Android 15.0
+App=Aplicativo WebdriverIO Native
+`;
+        fs.writeFileSync('./allure-results/environment.properties', content.trim());
+    },
+    afterTest: async function (test, context, { passed }) {
+    if (!passed) {
+      await browser.takeScreenshot();
+      allure.addDescription('Screenshot capturado após falha no teste mobile');
+    }
+  }
+
+    // afterTest: async function (test, context, { error, passed }) {
+    //     if (!passed) {
+    //         // 📸 Screenshot
+    //         const screenshot = await browser.takeScreenshot();
+    //         allure.addAttachment('Screenshot', Buffer.from(screenshot, 'base64'), 'image/png');
+
+    //         // 📄 Stack trace
+    //         if (error && error.stack) {
+    //             allure.addAttachment('Stack do Erro', error.stack, 'text/plain');
+    //         }
+
+    //         // 📋 Logs do navegador
+    //         try {
+    //             const logs = await browser.getLogs('browser');
+    //             if (logs.length) {
+    //                 const logText = logs.map(log => `[${log.level}] ${log.message}`).join('\n');
+    //                 allure.addAttachment('Logs do Navegador', logText, 'text/plain');
+    //             }
+    //         } catch (err) {
+    //             console.warn('Logs do navegador não disponíveis:', err.message);
+    //         }
+    //     }
+    // },
+
 }

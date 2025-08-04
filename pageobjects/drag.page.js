@@ -8,84 +8,20 @@ class DragPage {
         return $('//android.widget.TextView[@text="Drag and Drop"]');
     }
 
-    get dragElement() {
-        return $('//android.view.ViewGroup[@content-desc="drag-c1"]/android.widget.ImageView');
-    }
-
-    get dropTarget() {
-        return $('//android.view.ViewGroup[@content-desc="drop-c1"]/android.view.ViewGroup');
-    }
-
-    get dragSegundElement() {
-        return $('//android.view.ViewGroup[@content-desc="drag-c2"]/android.widget.ImageView');
-    }
-
-    get dropSegundTarget() {
-        return $('//android.view.ViewGroup[@content-desc="drop-c2"]/android.view.ViewGroup');
-    }
-
-    get dragElementC3() {
-        return $('//android.view.ViewGroup[@content-desc="drag-c3"]/android.widget.ImageView');
-    }
-
-    get dropTargetC3() {
-        return $('//android.view.ViewGroup[@content-desc="drop-c3"]/android.view.ViewGroup');
-    }
-
-    get dragElementL1() {
-        return $('//android.view.ViewGroup[@content-desc="drag-l1"]/android.widget.ImageView');
-    }
-
-    get dropTargetL1() {
-        return $('//android.view.ViewGroup[@content-desc="drop-l1"]/android.view.ViewGroup');
-    }
-
-    get dragElementL2() {
-        return $('//android.view.ViewGroup[@content-desc="drag-l2"]/android.widget.ImageView');
-    }
-
-    get dropTargetL2() {
-        return $('//android.view.ViewGroup[@content-desc="drop-l2"]/android.view.ViewGroup');
-    }
-
-    get dragElementL3() {
-        return $('//android.view.ViewGroup[@content-desc="drag-l3"]/android.widget.ImageView');
-    }
-
-    get dropTargetL3() {
-        return $('//android.view.ViewGroup[@content-desc="drop-l3"]/android.view.ViewGroup');
-    }  
-    
-    get dragElementR1() {
-        return $('//android.view.ViewGroup[@content-desc="drag-r1"]/android.widget.ImageView');
-    }
-
-    get dropTargetR1() {
-        return $('//android.view.ViewGroup[@content-desc="drop-r1"]/android.view.ViewGroup');
-    } 
-
-     get dragElementR2() {
-        return $('//android.view.ViewGroup[@content-desc="drag-r2"]/android.widget.ImageView');
-    }
-
-    get dropTargetR2() {
-        return $('//android.view.ViewGroup[@content-desc="drop-r2"]/android.view.ViewGroup');
-    }
-
-     get dragElementR3() {
-        return $('//android.view.ViewGroup[@content-desc="drag-r3"]/android.widget.ImageView');
-    }
-
-    get dropTargetR3() {
-        return $('//android.view.ViewGroup[@content-desc="drop-r3"]/android.view.ViewGroup');
-    }
-
     get retryText() {
         return $('//android.widget.TextView[@text="You made it, click retry if you want to try it again."]');
     }
 
     get retryButton() {
         return $('//android.view.ViewGroup[@content-desc="button-Retry"]/android.view.ViewGroup');
+    }
+
+    getDragElement(desc) {
+        return $(`//android.view.ViewGroup[@content-desc="drag-${desc}"]/android.widget.ImageView`);
+    }
+
+    getDropTarget(desc) {
+        return $(`//android.view.ViewGroup[@content-desc="drop-${desc}"]/android.view.ViewGroup`);
     }
 
     async acessarPaginaDrag() {
@@ -102,328 +38,58 @@ class DragPage {
 
     async validarDragAndDrop() {
         await expect(this.retryText).toBeDisplayed();
-        await expect(this.retryText).toHaveText('You made it, click retry if you want to try it again.', { timeout: 5000 });
+        await expect(this.retryText).toHaveText(
+            'You made it, click retry if you want to try it again.', 
+            { timeout: 5000 }
+        );
     }
 
-    async dragAndDrop() {
-        const drag = await this.dragElement;
-        const drop = await this.dropTarget;
-
-        await drag.waitForDisplayed({ timeout: 5000 });
-        await drop.waitForDisplayed({ timeout: 5000 });
-
-        // Pega as posições dos elementos para calcular o movimento
-        const dragLocation = await drag.getLocation();
-        const dropLocation = await drop.getLocation();
-        const dragSize = await drag.getSize();
-        const dropSize = await drop.getSize();
-
-        // Calcula o centro do elemento drag
+    // Método genérico que realiza o drag and drop entre dois elementos recebidos por parâmetro
+    async performDragAndDrop(dragElement, dropTarget, pause = 300, duration = 700) {
+        // Espera os elementos de origem e destino estarem visíveis
+        await dragElement.waitForDisplayed({ timeout: 5000 });
+        await dropTarget.waitForDisplayed({ timeout: 5000 });
+        // Pega a posição (x, y) dos elementos
+        const dragLocation = await dragElement.getLocation();
+        const dropLocation = await dropTarget.getLocation();
+        // Pega o tamanho (largura/altura) dos elementos
+        const dragSize = await dragElement.getSize();
+        const dropSize = await dropTarget.getSize();
+        // Calcula o ponto central de cada elemento para realizar o drag and drop
         const startX = dragLocation.x + dragSize.width / 2;
         const startY = dragLocation.y + dragSize.height / 2;
-
-        // Calcula o centro do alvo drop
+        // Calcula o ponto central do elemento de destino
+        // para onde o elemento arrastado será solto
         const endX = dropLocation.x + dropSize.width / 2;
         const endY = dropLocation.y + dropSize.height / 2;
 
-        // Executa o drag and drop simulando toque, movimento e soltura
+        // Simula os toques na tela usando a API performActions do WebDriver
         await driver.performActions([{
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
+            type: 'pointer', // tipo de ação: ponteiro (toque)
+            id: 'finger1', // id do ponteiro
+            parameters: { pointerType: 'touch' }, // tipo de ponteiro é toque (touch)
             actions: [
-                { type: 'pointerMove', duration: 0, x: startX, y: startY },
-                { type: 'pointerDown', button: 0 },
-                { type: 'pause', duration: 200 },
-                { type: 'pointerMove', duration: 500, x: endX, y: endY },
-                { type: 'pointerUp', button: 0 }
+                { type: 'pointerMove', duration: 0, x: startX, y: startY }, // move para o centro do elemento de origem
+                { type: 'pointerDown', button: 0 }, // simula o toque (pressionar)
+                { type: 'pause', duration: pause }, // pausa antes de mover
+                { type: 'pointerMove', duration: duration, x: endX, y: endY }, // move para o centro do alvo (drag)
+                { type: 'pointerUp', button: 0 } // solta o toque (drop)
             ]
         }]);
 
-        await driver.pause(1000);  // Espera a animação terminar
-        await driver.releaseActions();
-    }
-
-    async dragAndDropSegund() {
-        const drag = await this.dragSegundElement;
-        const drop = await this.dropSegundTarget;
-
-        await drag.waitForDisplayed({ timeout: 5000 });
-        await drop.waitForDisplayed({ timeout: 5000 });
-
-        const dragLocation = await drag.getLocation();
-        const dropLocation = await drop.getLocation();
-        const dragSize = await drag.getSize();
-        const dropSize = await drop.getSize();
-
-        const startX = dragLocation.x + dragSize.width / 2;
-        const startY = dragLocation.y + dragSize.height / 2;
-
-        const endX = dropLocation.x + dropSize.width / 2;
-        const endY = dropLocation.y + dropSize.height / 2;
-
-        await driver.performActions([{
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
-            actions: [
-                { type: 'pointerMove', duration: 0, x: startX, y: startY },
-                { type: 'pointerDown', button: 0 },
-                { type: 'pause', duration: 300 },
-                { type: 'pointerMove', duration: 700, x: endX, y: endY },
-                { type: 'pointerUp', button: 0 }
-            ]
-        }]);
-
+        // Espera um tempo para a animação acontecer
         await driver.pause(1000);
-        await driver.releaseActions();
-    }
-    
-    async dragAndDropC3() {
-        const drag = await this.dragElementC3;
-        const drop = await this.dropTargetC3;
-
-        await drag.waitForDisplayed({ timeout: 5000 });
-        await drop.waitForDisplayed({ timeout: 5000 });
-
-        const dragLocation = await drag.getLocation();
-        const dropLocation = await drop.getLocation();
-        const dragSize = await drag.getSize();
-        const dropSize = await drop.getSize();
-
-        const startX = dragLocation.x + dragSize.width / 2;
-        const startY = dragLocation.y + dragSize.height / 2;
-
-        const endX = dropLocation.x + dropSize.width / 2;
-        const endY = dropLocation.y + dropSize.height / 2;
-
-        await driver.performActions([{
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
-            actions: [
-                { type: 'pointerMove', duration: 0, x: startX, y: startY },
-                { type: 'pointerDown', button: 0 },
-                { type: 'pause', duration: 300 },
-                { type: 'pointerMove', duration: 700, x: endX, y: endY },
-                { type: 'pointerUp', button: 0 }
-            ]
-        }]);
-
-        await driver.pause(1000);
+        // Libera as ações pendentes (boa prática após performActions)
         await driver.releaseActions();
     }
 
-
-    async dragAndDropL1() {
-        const drag = await this.dragElementL1;
-        const drop = await this.dropTargetL1;
-
-        await drag.waitForDisplayed({ timeout: 5000 });
-        await drop.waitForDisplayed({ timeout: 5000 });
-
-        const dragLocation = await drag.getLocation();
-        const dropLocation = await drop.getLocation();
-        const dragSize = await drag.getSize();
-        const dropSize = await drop.getSize();
-
-        const startX = dragLocation.x + dragSize.width / 2;
-        const startY = dragLocation.y + dragSize.height / 2;
-
-        const endX = dropLocation.x + dropSize.width / 2;
-        const endY = dropLocation.y + dropSize.height / 2;
-
-        await driver.performActions([{
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
-            actions: [
-                { type: 'pointerMove', duration: 0, x: startX, y: startY },
-                { type: 'pointerDown', button: 0 },
-                { type: 'pause', duration: 300 },
-                { type: 'pointerMove', duration: 700, x: endX, y: endY },
-                { type: 'pointerUp', button: 0 }
-            ]
-        }]);
-
-        await driver.pause(1000);
-        await driver.releaseActions();
-    }
-
-    async dragAndDropL2() {
-        const drag = await this.dragElementL2;
-        const drop = await this.dropTargetL2;
-
-        await drag.waitForDisplayed({ timeout: 5000 });
-        await drop.waitForDisplayed({ timeout: 5000 });
-
-        const dragLocation = await drag.getLocation();
-        const dropLocation = await drop.getLocation();
-        const dragSize = await drag.getSize();
-        const dropSize = await drop.getSize();
-
-        const startX = dragLocation.x + dragSize.width / 2;
-        const startY = dragLocation.y + dragSize.height / 2;
-
-        const endX = dropLocation.x + dropSize.width / 2;
-        const endY = dropLocation.y + dropSize.height / 2;
-
-        await driver.performActions([{
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
-            actions: [
-                { type: 'pointerMove', duration: 0, x: startX, y: startY },
-                { type: 'pointerDown', button: 0 },
-                { type: 'pause', duration: 300 },
-                { type: 'pointerMove', duration: 700, x: endX, y: endY },
-                { type: 'pointerUp', button: 0 }
-            ]
-        }]);
-
-        await driver.pause(1000);
-        await driver.releaseActions();
-    }
-
-    async dragAndDropL3() {
-        const drag = await this.dragElementL3;
-        const drop = await this.dropTargetL3;
-
-        await drag.waitForDisplayed({ timeout: 5000 });
-        await drop.waitForDisplayed({ timeout: 5000 });
-
-        const dragLocation = await drag.getLocation();
-        const dropLocation = await drop.getLocation();
-        const dragSize = await drag.getSize();
-        const dropSize = await drop.getSize();
-
-        const startX = dragLocation.x + dragSize.width / 2;
-        const startY = dragLocation.y + dragSize.height / 2;
-
-        const endX = dropLocation.x + dropSize.width / 2;
-        const endY = dropLocation.y + dropSize.height / 2;
-
-        await driver.performActions([{
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
-            actions: [
-                { type: 'pointerMove', duration: 0, x: startX, y: startY },
-                { type: 'pointerDown', button: 0 },
-                { type: 'pause', duration: 300 },
-                { type: 'pointerMove', duration: 700, x: endX, y: endY },
-                { type: 'pointerUp', button: 0 }
-            ]
-        }]);
-
-        await driver.pause(1000);
-        await driver.releaseActions();
-    }
-
-    async dragAndDropR1() {
-        const drag = await this.dragElementR1;
-        const drop = await this.dropTargetR1;
-
-        await drag.waitForDisplayed({ timeout: 5000 });
-        await drop.waitForDisplayed({ timeout: 5000 });
-
-        const dragLocation = await drag.getLocation();
-        const dropLocation = await drop.getLocation();
-        const dragSize = await drag.getSize();
-        const dropSize = await drop.getSize();
-
-        const startX = dragLocation.x + dragSize.width / 2;
-        const startY = dragLocation.y + dragSize.height / 2;
-
-        const endX = dropLocation.x + dropSize.width / 2;
-        const endY = dropLocation.y + dropSize.height / 2;
-
-        await driver.performActions([{
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
-            actions: [
-                { type: 'pointerMove', duration: 0, x: startX, y: startY },
-                { type: 'pointerDown', button: 0 },
-                { type: 'pause', duration: 300 },
-                { type: 'pointerMove', duration: 700, x: endX, y: endY },
-                { type: 'pointerUp', button: 0 }
-            ]
-        }]);
-
-        await driver.pause(1000);
-        await driver.releaseActions();
-    }
-
-    async dragAndDropR2() {
-        const drag = await this.dragElementR2;
-        const drop = await this.dropTargetR2;
-
-        await drag.waitForDisplayed({ timeout: 5000 });
-        await drop.waitForDisplayed({ timeout: 5000 });
-
-        const dragLocation = await drag.getLocation();
-        const dropLocation = await drop.getLocation();
-        const dragSize = await drag.getSize();
-        const dropSize = await drop.getSize();
-
-        const startX = dragLocation.x + dragSize.width / 2;
-        const startY = dragLocation.y + dragSize.height / 2;
-
-        const endX = dropLocation.x + dropSize.width / 2;
-        const endY = dropLocation.y + dropSize.height / 2;
-
-        await driver.performActions([{
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
-            actions: [
-                { type: 'pointerMove', duration: 0, x: startX, y: startY },
-                { type: 'pointerDown', button: 0 },
-                { type: 'pause', duration: 300 },
-                { type: 'pointerMove', duration: 700, x: endX, y: endY },
-                { type: 'pointerUp', button: 0 }
-            ]
-        }]);
-
-        await driver.pause(1000);
-        await driver.releaseActions();
-    }
-
-    async dragAndDropR3() {
-        const drag = await this.dragElementR3;
-        const drop = await this.dropTargetR3;
-
-        await drag.waitForDisplayed({ timeout: 5000 });
-        await drop.waitForDisplayed({ timeout: 5000 });
-
-        const dragLocation = await drag.getLocation();
-        const dropLocation = await drop.getLocation();
-        const dragSize = await drag.getSize();
-        const dropSize = await drop.getSize();
-
-        const startX = dragLocation.x + dragSize.width / 2;
-        const startY = dragLocation.y + dragSize.height / 2;
-
-        const endX = dropLocation.x + dropSize.width / 2;
-        const endY = dropLocation.y + dropSize.height / 2;
-
-        await driver.performActions([{
-            type: 'pointer',
-            id: 'finger1',
-            parameters: { pointerType: 'touch' },
-            actions: [
-                { type: 'pointerMove', duration: 0, x: startX, y: startY },
-                { type: 'pointerDown', button: 0 },
-                { type: 'pause', duration: 300 },
-                { type: 'pointerMove', duration: 700, x: endX, y: endY },
-                { type: 'pointerUp', button: 0 }
-            ]
-        }]);
-
-        await driver.pause(1000);
-        await driver.releaseActions();
+    // Método de atalho que recebe o ID (ex: 'c1', 'l3') e chama a função de drag and drop genérica
+    async dragAndDropById(id, pause = 300, duration = 700) {
+        // Busca os elementos de origem e destino com base no ID
+        const drag = this.getDragElement(id);
+        const drop = this.getDropTarget(id);
+        // Executa o drag and drop
+        await this.performDragAndDrop(drag, drop, pause, duration);
     }
 }
-
 module.exports = new DragPage();

@@ -1,5 +1,3 @@
-const { expect } = require('@wdio/globals');
-
 const UserPage = require('../pageobjects/cadastroUser.page');
 const userData = require('../data/userData.json'); // Importando os dados do usuário
 

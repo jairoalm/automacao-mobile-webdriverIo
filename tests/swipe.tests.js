@@ -1,6 +1,6 @@
 const SwipePage = require('../pageobjects/swipe.page');
 
-describe('Funcionalidade de Swipe Horizontal', () => {
+describe('Teste das funcionalidades de Swipe Horizontal', () => {
     beforeEach(async () => {
         await SwipePage.acessarPaginaSwipe();
     });

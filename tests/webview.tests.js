@@ -1,7 +1,6 @@
-const { expect } = require('@wdio/globals');
 const WebviewPage = require('../pageobjects/webview.page');
 
-describe('Webview Feature', () => {
+describe('Validação página WebView', () => {
     it('Deve acessar o menu Webview, clicar em Get Started e validar o texto de boas-vindas', async () => {
         await WebviewPage.clickWebviewMenu();
         await WebviewPage.clickGetStarted();

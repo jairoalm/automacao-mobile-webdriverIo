@@ -5,7 +5,7 @@ const LoginPage = require('../pageobjects/login.page');
 const UserPage = require('../pageobjects/cadastroUser.page');
 const ComponentPage = require('../pageobjects/forms.page');
 
-describe('Testes de login com CSV', () => {
+describe('Testes de login com dados do CSV', () => {
     let users = {}; // Objeto para armazenar os dados de cada cenário carregados do CSV
 
     before(async () => {
