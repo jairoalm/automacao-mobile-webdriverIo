@@ -1,0 +1,4 @@
+{
+  "using": "xpath",
+  "value": "//android.view.View[@text=\"Main\"]//android.widget.Button[@text=\"Toggle navigation bar\"]"
+}
