@@ -4,19 +4,19 @@
 
 ### ✨ **Sumário**
 
-1. Introdução
-2. Objetivo
-3. Ambiente de Teste
-4. Estrutura dos Testes Automatizados
-5. Lista de Cenários por Módulo
-   - 5.1. Home
-   - 5.2. Formulário
-   - 5.3. Drag and Drop
-   - 5.4. Cadastro de Usuário
-   - 5.5. Login
-   - 5.6. Swipe
-   - 5.7. WebView
-6. Considerações Finais
+1. [Introdução](#1-introdução)
+2. [Objetivo](#2-objetivo)
+3. [Ambiente de Teste](#3-ambiente-de-teste)
+4. [Estrutura dos Testes Automatizados](#4-estrutura-dos-testes-automatizados)
+5. [Lista de Cenários por Módulo](#5-lista-de-cenários-por-telas)
+   - 5.1. [Home](#51-home-page-hometestsjs)
+   - 5.2. [Formulário](#52-formulário-formstestsjs)
+   - 5.3. [Drag and Drop](#53-drag-and-drop-dragtestsjs)
+   - 5.4. [Cadastro de Usuário](#54-cadastro-de-usuário-usertestsjs)
+   - 5.5. [Login](#55-login-logintestsjs)
+   - 5.6. [Swipe](#56-swipe-horizontal-swipetestsjs)
+   - 5.7. [WebView](#57-webview-webviewtestsjs)
+6. [Considerações Finais](#6-considerações-finais)
 
 ---
 
@@ -24,13 +24,13 @@
 Este documento descreve os cenários de testes automatizados da aplicação mobile, estruturados com base nos arquivos de teste desenvolvidos com a biblioteca WebdriverIO.
 
 ### 2. **Objetivo**
-Validar o correto funcionamento das funcionalidades principais do aplicativo através de testes automatizados, garantindo qualidade, segurança e estabilidade nas entregas.
+Validar o correto funcionamento das funcionalidades principais do aplicativo através de testes automatizados, garantindo qualidade, segurança e estabilidade.
 
 ### 3. **Ambiente de Teste**
 - Plataforma: Android
 - Ferramenta de automação: WebdriverIO
 - Linguagem: JavaScript (Node.js)
-- Framework de testes: Mocha
+- Framework de testes: Mocha, spec
 - Appium
 - Appium Inspector
 - Browserstack
@@ -95,4 +95,4 @@ Os testes estão organizados com Page Object, sendo cada tela representado por u
 
 ### 6. **Considerações Finais**
 
-Os testes descritos garantem cobertura essencial das funcionalidades do aplicativo. Com esses cenários implementados e validados via automação, é possível identificar falhas rapidamente, validar requisitos funcionais e assegurar maior confiança nas entregas para produção.
+Os testes descritos garantem cobertura essencial das funcionalidades do aplicativo. Com esses cenários implementados e validados via automação, é possível identificar falhas, e ter uma segurança maior em assegurar que as funcionalidades contiuam funcionando e também para encontrar bugs no app.
